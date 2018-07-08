@@ -74,6 +74,13 @@ public class Client : MonoBehaviour
 
     private void OnIncomingData(string data)
     {
+        if(data == "%NAME")
+        {
+            Debug.Log("Asked name");
+            Send("&NAME |" + clientName);
+            return;
+        }
+
         GameObject go = Instantiate(messagePrefab, chatContainer.transform) as GameObject;
         go.GetComponentInChildren<Text>().text = data;
     }
@@ -94,5 +101,26 @@ public class Client : MonoBehaviour
     {
         string message = GameObject.Find("SendInput").GetComponent<InputField>().text;
         Send(message);
+    }
+
+    private void CloseSocket()
+    {
+        if (!socketReady)
+            return;
+
+        writer.Close();
+        reader.Close();
+        socket.Close();
+        socketReady = false;
+    }
+
+    private void OnApplicationQuit()
+    {
+        CloseSocket();
+    }
+
+    private void OnDisable()
+    {
+        CloseSocket();
     }
 }

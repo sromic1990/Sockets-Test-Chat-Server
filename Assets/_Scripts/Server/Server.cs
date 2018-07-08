@@ -65,10 +65,25 @@ public class Server : MonoBehaviour
                 }
             }
         }
+
+        //Disconnecting the left clients
+        for (int i = 0; i < disconnectList.Count; i++)
+        {
+            clients.Remove(disconnectList[i]);
+            disconnectList.RemoveAt(i);
+            Broadcast(disconnectList[i]+" has disconnected!", clients);
+        }
     }
 
     private void OnIncomingData(ServerClient c, string data)
     {
+        if(data.Contains("&NAME"))
+        {
+            c.clientName = data.Split('|')[1];
+            Broadcast(c.clientName + " has connected!", clients);
+            return;
+        }
+
         Broadcast(c.clientName+" : "+data, clients);
     }
 
@@ -110,8 +125,10 @@ public class Server : MonoBehaviour
         clients.Add(new ServerClient(listener.EndAcceptTcpClient(ar)));
         StartListenening();
 
+        Broadcast("%NAME", new List<ServerClient>() { clients[clients.Count - 1] });
+
         //Send Message to everyone, say someone has connected
-        Broadcast(clients[clients.Count - 1].clientName + " has connected", clients);
+        //Broadcast(clients[clients.Count - 1].clientName + " has connected", clients);
     }
 
     private void Broadcast(string data, List<ServerClient> cl)
