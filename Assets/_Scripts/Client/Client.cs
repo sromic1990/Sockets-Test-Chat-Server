@@ -80,7 +80,7 @@ public class Client : MonoBehaviour
             Send("&NAME |" + clientName);
             return;
         }
-
+        Debug.Log("<color=red>Incoming Message</color>");
         GameObject go = Instantiate(messagePrefab, chatContainer.transform) as GameObject;
         go.GetComponentInChildren<Text>().text = data;
     }
